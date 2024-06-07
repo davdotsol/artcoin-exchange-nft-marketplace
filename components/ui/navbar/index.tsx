@@ -19,7 +19,7 @@ const navigation = [
   { name: 'Create', href: '/nft/create', current: false },
 ];
 
-function classNames(...classes) {
+function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 

@@ -1,4 +1,4 @@
-import { NFTMetaData } from '../../../types/nft';
+import { NFTMetaData } from '../../../../types/nft';
 
 type NFTItemProps = {
   nft: NFTMetaData;

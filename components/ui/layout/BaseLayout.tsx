@@ -1,6 +1,11 @@
+import { ReactNode } from 'react';
 import Navbar from '../navbar';
 
-const BaseLayout = ({ children }) => {
+interface BaseLayoutProps {
+  children: ReactNode;
+}
+
+const BaseLayout = ({ children }: BaseLayoutProps) => {
   return (
     <>
       <Navbar />
