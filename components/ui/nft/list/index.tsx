@@ -11,7 +11,7 @@ const NFTList = ({ nfts }: NFTListProps) => {
       {nfts.map((nft) => (
         <div
           key={nft.image}
-          className="flex flex-col rounded-lg shadow-lg overflow-hidden"
+          className="flex flex-col rounded-lg shadow-lg overflow-hidden bg-light"
         >
           <NFTItem nft={nft} />
         </div>

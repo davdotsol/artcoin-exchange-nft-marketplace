@@ -1,0 +1,40 @@
+[
+  {
+    "description": "Fierce violet robot. Very durable and tanky.",
+    "image": "https://robohash.org/Robot_1.png",
+    "name": "Robot #1",
+    "attributes": [
+      {
+        "trait_type": "attack",
+        "value": "20"
+      },
+      {
+        "trait_type": "health",
+        "value": "100"
+      },
+      {
+        "trait_type": "speed",
+        "value": "30"
+      }
+    ]
+  },
+  {
+    "description": "Fierce blueish robot. Avarage in attack and speed.",
+    "image": "https://robohash.org/Robot_2.png",
+    "name": "Robot #2",
+    "attributes": [
+      {
+        "trait_type": "attack",
+        "value": "40"
+      },
+      {
+        "trait_type": "health",
+        "value": "80"
+      },
+      {
+        "trait_type": "speed",
+        "value": "50"
+      }
+    ]
+  }
+]
