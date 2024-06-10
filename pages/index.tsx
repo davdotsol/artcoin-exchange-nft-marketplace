@@ -1,8 +1,11 @@
 import { BaseLayout, NFTList } from '@ui';
 import nfts from '../content/meta.json';
 import { NFTMetaData } from '@_types/nft';
+import { useWeb3 } from '@providers/web3';
 
 export default function Home() {
+  const { ethereum, provider } = useWeb3();
+
   return (
     <BaseLayout>
       <div className="relative bg-primary pt-16 pb-20 px-4 sm:px-6 lg:pt-24 lg:pb-28 lg:px-8">
