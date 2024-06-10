@@ -19,3 +19,17 @@ export const getDefaultWeb3State = () => {
     isLoading: true,
   };
 };
+
+export const loadContract = async (name: string, provider: BrowserProvider) => {
+  const { chainId } = await provider.getNetwork();
+  const res = await fetch(`/config/config.json`);
+  const config = await res.json();
+
+  if (!chainId || !config[chainId]) {
+    return null;
+  }
+  const abiRes = await fetch(`/abis/${name}.json`);
+  const abi = await abiRes.json();
+  const contract = new Contract(config[chainId].market.address, abi, provider);
+  return contract;
+};
