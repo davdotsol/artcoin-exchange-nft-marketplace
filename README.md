@@ -11,4 +11,4 @@ ArtCoin Exchange is a decentralized NFT marketplace built on Next.js and Web3, p
 
 ## Deployment
 
-The application is deployed on Vercel and can be accessed at https://artcoin.exchange.vercel.app.
+The application is deployed on Vercel and can be accessed at https://artcoin-exchange.vercel.app.
