@@ -13,6 +13,7 @@ import {
   Transition,
 } from '@headlessui/react';
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useAccount } from '@hooks/web3';
 
 const navigation = [
   { name: 'Marketplace', href: '/', current: true },
@@ -25,6 +26,10 @@ function classNames(...classes: string[]) {
 
 export default function Navbar() {
   const { pathname } = useRouter();
+  const { account } = useAccount('');
+  if (account) {
+    console.log('account', account.data);
+  }
   return (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
