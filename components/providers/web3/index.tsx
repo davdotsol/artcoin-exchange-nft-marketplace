@@ -27,7 +27,6 @@ const Web3Provider = ({ children }: any) => {
           })
         );
       } catch (error) {
-        console.error('Error initializing Web3:', error);
         setWeb3Api((prev) => ({ ...prev, isLoading: false }));
       }
     }
