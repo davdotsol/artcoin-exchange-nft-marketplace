@@ -10,7 +10,7 @@ import { setupHooks } from '@hooks/web3/setupHooks';
 
 const Web3Context = createContext<Web3State>(getDefaultWeb3State());
 
-const Web3Provider = ({ children }) => {
+const Web3Provider = ({ children }: any) => {
   const [web3Api, setWeb3Api] = useState<Web3State>(getDefaultWeb3State());
 
   useEffect(() => {

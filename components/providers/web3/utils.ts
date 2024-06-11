@@ -3,6 +3,12 @@ import { Contract, BrowserProvider } from 'ethers';
 import { Web3Hooks, setupHooks } from '@hooks/web3/setupHooks';
 import { Web3Dependencies } from '@_types/hooks';
 
+declare global {
+  interface Window {
+    ethereum: MetaMaskInpageProvider;
+  }
+}
+
 type Nullable<T> = {
   [P in keyof T]: T[P] | null;
 };
