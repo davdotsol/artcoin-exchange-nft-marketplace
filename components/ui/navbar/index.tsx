@@ -91,7 +91,7 @@ export default function Navbar() {
                   isInstalled={account.isInstalled}
                   isLoading={account.isLoading}
                   connect={account.connect}
-                  account={account.data}
+                  account={account.data as string}
                 />
               </div>
             </div>

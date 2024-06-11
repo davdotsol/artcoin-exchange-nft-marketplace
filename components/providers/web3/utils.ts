@@ -48,11 +48,18 @@ export const loadContract = async (name: string, provider: BrowserProvider) => {
   const res = await fetch(`/config/config.json`);
   const config = await res.json();
 
-  if (!chainId || !config[chainId]) {
+  const chainIdStr = chainId.toString(); // Convert bigint to string
+
+  if (!chainId || !config[chainIdStr]) {
     return null;
   }
+
   const abiRes = await fetch(`/abis/${name}.json`);
   const abi = await abiRes.json();
-  const contract = new Contract(config[chainId].market.address, abi, provider);
+  const contract = new Contract(
+    config[chainIdStr].market.address,
+    abi,
+    provider
+  );
   return contract;
 };

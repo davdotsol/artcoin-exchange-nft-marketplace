@@ -1,5 +1,6 @@
 import { createContext, useState, useContext, useEffect } from 'react';
 import { ethers } from 'ethers';
+import { MetaMaskInpageProvider } from '@metamask/providers';
 import {
   getDefaultWeb3State,
   getWeb3State,
@@ -39,6 +40,9 @@ const Web3Provider = ({ children }: any) => {
       try {
         const provider = new ethers.BrowserProvider(window.ethereum as any);
         const contract = await loadContract('NFTMarket', provider);
+        if (!contract) {
+          throw new Error('Contract is not loaded');
+        }
         setGlobalListeners(window.ethereum);
         setWeb3Api(
           getWeb3State({

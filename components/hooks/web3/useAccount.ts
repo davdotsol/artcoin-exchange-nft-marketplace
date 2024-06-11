@@ -43,12 +43,12 @@ export const createAccountHook: AccountHookFactory = (deps) => () => {
     };
   });
 
-  const handleAccountsChanged = (...args: unknow[]) => {
+  const handleAccountsChanged = (...args: unknown[]) => {
     const accounts = args[0] as string[];
     console.log(accounts);
     if (accounts.length === 0) {
       console.error('Please, connect to Web3 wallet');
-    } else if (accounts[0] !== swr.data) {
+    } else if (accounts[0] !== data) {
       mutate(accounts[0]);
     }
   };
@@ -59,7 +59,7 @@ export const createAccountHook: AccountHookFactory = (deps) => () => {
     }
     try {
       await ethereum.request({ method: 'eth_requestAccounts' });
-    } catch (error) {
+    } catch (error: any) {
       console.log(error.message);
     }
   };

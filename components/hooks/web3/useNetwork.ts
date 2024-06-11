@@ -25,7 +25,7 @@ type UseNetworkResponse = {
 
 type NetworkHookFactory = CryptoHookFactory<string, UseNetworkResponse>;
 
-export type UseAccountHook = ReturnType<NetworkHookFactory>;
+export type UseNetworkHook = ReturnType<NetworkHookFactory>;
 
 export const createNetworkHook: NetworkHookFactory = (deps) => () => {
   const { provider, isLoading } = deps;
@@ -38,10 +38,11 @@ export const createNetworkHook: NetworkHookFactory = (deps) => () => {
     if (!chainId) {
       throw new Error('Cannot retrieve Network');
     }
-    return NETWORKS[chainId];
+    const chainIdNumber = Number(chainId); // Convert bigint to number
+    return NETWORKS[chainIdNumber];
   };
 
-  const { data, isValidating, ...swrRes } = useSWR<string>(
+  const { data, isValidating, ...swr } = useSWR<string>(
     'web3/useNetwork',
     fetcher,
     {
@@ -50,7 +51,7 @@ export const createNetworkHook: NetworkHookFactory = (deps) => () => {
   );
 
   return {
-    ...swrRes,
+    ...swr,
     data,
     isValidating,
     targetNetwork,
