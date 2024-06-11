@@ -13,7 +13,7 @@ import {
   Transition,
 } from '@headlessui/react';
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { useAccount } from '@hooks/web3';
+import { useAccount, useNetwork } from '@hooks/web3';
 import Walletbar from './Walletbar';
 
 const navigation = [
@@ -28,9 +28,7 @@ function classNames(...classes: string[]) {
 export default function Navbar() {
   const { pathname } = useRouter();
   const { account } = useAccount();
-
-  console.log('account', account.data);
-  console.log('account', account.error);
+  const { network } = useNetwork();
   return (
     <Disclosure as="nav" className="bg-secondary">
       {({ open }) => (
@@ -72,6 +70,23 @@ export default function Navbar() {
                 </div>
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                <div className="text-light self-center mr-2">
+                  <span className="inline-flex items-center ml-4 px-4 py-2 rounded-md text-sm font-medium bg-light text-accent">
+                    <svg
+                      className="-ml-0.5 mr-1.5 h-2 w-2 text-highlight"
+                      fill="currentColor"
+                      viewBox="0 0 8 8"
+                    >
+                      <circle cx={4} cy={4} r={3} />
+                    </svg>
+                    {network.isLoading
+                      ? 'Loading...'
+                      : account.isInstalled
+                      ? network.data
+                      : 'Install Web3 Wallet'}
+                  </span>
+                </div>
+
                 <Walletbar
                   isInstalled={account.isInstalled}
                   isLoading={account.isLoading}

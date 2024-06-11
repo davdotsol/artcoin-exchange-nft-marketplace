@@ -5,3 +5,9 @@ export const useAccount = () => {
   const account = useAccount();
   return { account };
 };
+
+export const useNetwork = () => {
+  const { useNetwork } = useHooks();
+  const network = useNetwork();
+  return { network };
+};

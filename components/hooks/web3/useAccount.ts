@@ -27,11 +27,12 @@ export const createAccountHook: AccountHookFactory = (deps) => () => {
     return account.address;
   };
 
-  const { data, mutate, isValidating, ...swrRes } = useSWR<string>(
+  const { data, mutate, isValidating, ...swr } = useSWR<string>(
     'web3/useAccount',
     fetcher,
     {
       revalidateOnFocus: false,
+      shouldRetryOnError: false,
     }
   );
 
@@ -47,8 +48,8 @@ export const createAccountHook: AccountHookFactory = (deps) => () => {
     console.log(accounts);
     if (accounts.length === 0) {
       console.error('Please, connect to Web3 wallet');
-    } else if (accounts[0] !== swrRes.data) {
-      swrRes.mutate(accounts[0]);
+    } else if (accounts[0] !== swr.data) {
+      mutate(accounts[0]);
     }
   };
 
@@ -64,10 +65,10 @@ export const createAccountHook: AccountHookFactory = (deps) => () => {
   };
 
   return {
-    ...swrRes,
+    ...swr,
     data,
     isValidating,
-    isLoading: isLoading || isValidating,
+    isLoading: isLoading as boolean,
     isInstalled: ethereum?.isMetaMask || false,
     mutate,
     connect,
