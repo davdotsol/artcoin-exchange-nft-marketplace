@@ -4,7 +4,7 @@ import { NFTMetaData } from '@_types/nft';
 import { useWeb3 } from '@providers/web3';
 
 export default function Home() {
-  const { ethereum, provider, nftContract } = useWeb3();
+  const { ethereum, provider, nftContract, nftMarketplaceContract } = useWeb3();
 
   return (
     <BaseLayout>

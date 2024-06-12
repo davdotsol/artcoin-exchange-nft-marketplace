@@ -24,6 +24,12 @@ contract NFTMarketplace is Ownable, ReentrancyGuard {
         address seller,
         uint256 price
     );
+    event NFTSold(
+        uint256 indexed listingId,
+        uint256 indexed tokenId,
+        address buyer,
+        uint256 price
+    );
 
     constructor(
         address _initialOwner,
@@ -53,8 +59,13 @@ contract NFTMarketplace is Ownable, ReentrancyGuard {
     }
 
     function buyNFT(uint256 listingId) external payable nonReentrant {
-        require(false, "Not implemented yet: buyNFT.");
-        console.log("buy NFT", listingId);
+        Listing storage listing = listings[listingId];
+        require(msg.value == listing.price, "Incorrect price");
+        require(!listing.sold, "NFT already sold");
+        listing.seller.transfer(msg.value);
+        nftContract.transferFrom(address(this), msg.sender, listing.tokenId);
+        listing.sold = true;
+        emit NFTSold(listingId, listing.tokenId, msg.sender, listing.price);
     }
 
     function getListing(
