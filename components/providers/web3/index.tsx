@@ -39,8 +39,9 @@ const Web3Provider = ({ children }: any) => {
     async function initWeb3() {
       try {
         const provider = new ethers.BrowserProvider(window.ethereum as any);
-        const contract = await loadContract('NFTMarket', provider);
-        if (!contract) {
+        const nftContract = await loadContract('NFTMarket', provider);
+
+        if (!nftContract) {
           throw new Error('Contract is not loaded');
         }
         setGlobalListeners(window.ethereum);
@@ -48,7 +49,7 @@ const Web3Provider = ({ children }: any) => {
           getWeb3State({
             ethereum: window.ethereum,
             provider,
-            contract,
+            nftContract,
             isLoading: false,
           })
         );
