@@ -34,15 +34,21 @@ describe('NFTMarket Contract', function () {
   describe('Mint token', function () {
     it('Should have the correct recipient address', async function () {
       const { nftMarket, owner, addr1 } = await loadFixture(deployFixture);
+
+      // Mint the NFT to addr1
       await nftMarket.mint(addr1);
 
+      // Verify the owner of the nft is correct
       expect(await nftMarket.ownerOf(0)).to.equal(addr1.address);
     });
 
     it('Should have the correct token URI', async function () {
       const { nftMarket, owner, addr1 } = await loadFixture(deployFixture);
-      await nftMarket.mint(owner);
 
+      // Mint the NFT to addr1
+      await nftMarket.mint(addr1);
+
+      // Verify the token URI is correct
       expect(await nftMarket.tokenURI(0)).to.equal(
         'https://api.example.com/metadata/0'
       );
@@ -51,8 +57,27 @@ describe('NFTMarket Contract', function () {
 
   describe('Marketplace', function () {
     it('should have one listed item', async function () {
-      const { nftMarketplace } = await loadFixture(deployFixture);
-      await nftMarketplace.listNFT(0, 10000);
+      const { nftMarketplace, nftMarket, owner, addr1 } = await loadFixture(
+        deployFixture
+      );
+
+      // Mint the NFT to addr1
+      await nftMarket.mint(addr1);
+
+      // Approve the marketplace contract to handle the token
+      await nftMarket.connect(addr1).approve(nftMarketplace, 0);
+
+      // List the NFT on the marketplace
+      const tx = await nftMarketplace.connect(addr1).listNFT(0, 10000);
+      await tx.wait();
+
+      // Verify the event was emitted correctly
+      await expect(tx)
+        .to.emit(nftMarketplace, 'NFTListed')
+        .withArgs(0, 0, addr1.address, 10000); // Correct the index for args
+
+      const listing = await nftMarketplace.getListing(0);
+      expect(listing.tokenId.toString()).to.equal('0');
     });
   });
 });
