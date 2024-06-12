@@ -14,15 +14,20 @@ describe('NFTMarket Contract', function () {
 
     await nftMarket.waitForDeployment();
 
+    const NFTMarketplace = await ethers.getContractFactory('NFTMarketplace');
+    const nftMarketplace = await NFTMarketplace.deploy(owner, nftMarket);
+    await nftMarketplace.waitForDeployment();
+
     // Fixtures can return anything you consider useful for your tests
-    return { nftMarket, owner, addr1, addr2 };
+    return { nftMarketplace, nftMarket, owner, addr1, addr2 };
   }
 
   describe('Deployment', function () {
     it('Should have the correct name and symbol', async function () {
-      const { nftMarket } = await loadFixture(deployFixture);
+      const { nftMarketplace, nftMarket } = await loadFixture(deployFixture);
       expect(await nftMarket.name()).to.equal('RobotsNFT');
       expect(await nftMarket.symbol()).to.equal('RNFT');
+      expect(await nftMarketplace.nftContract()).to.equal(nftMarket);
     });
   });
 
