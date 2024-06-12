@@ -4,7 +4,8 @@ const NAME = '';
 const SYMBOL = '';
 
 module.exports = buildModule('NFTMarketModule', (m: any) => {
-  const nftMarket = m.contract('NFTMarket');
+  const owner = m.getAccount(0);
+  const nftMarket = m.contract('NFTMarket', [owner]);
 
   return { nftMarket };
 });
