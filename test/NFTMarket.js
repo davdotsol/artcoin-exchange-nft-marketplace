@@ -48,4 +48,11 @@ describe('NFTMarket Contract', function () {
       );
     });
   });
+
+  describe('Marketplace', function () {
+    it('should have one listed item', async function () {
+      const { nftMarketplace } = await loadFixture(deployFixture);
+      await nftMarketplace.listNFT(0, 10000);
+    });
+  });
 });
