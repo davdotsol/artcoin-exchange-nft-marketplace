@@ -11,3 +11,9 @@ export const useNetwork = () => {
   const network = useNetwork();
   return { network };
 };
+
+export const useListedNFTs = () => {
+  const { useListedNFTs } = useHooks();
+  const nfts = useListedNFTs();
+  return { nfts };
+};

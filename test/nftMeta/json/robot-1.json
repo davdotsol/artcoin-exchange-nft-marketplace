@@ -1,0 +1,19 @@
+{
+  "description": "Fierce violet robot. Very durable and tanky.",
+  "image": "https://lavender-labour-wasp-844.mypinata.cloud/ipfs/QmUPjT6jMshvNRvLUPK4qfGuE7W3vFiUfJ7VcQXjN3XDgG",
+  "name": "Robot #1",
+  "attributes": [
+    {
+      "trait_type": "attack",
+      "value": "20"
+    },
+    {
+      "trait_type": "health",
+      "value": "100"
+    },
+    {
+      "trait_type": "speed",
+      "value": "30"
+    }
+  ]
+}

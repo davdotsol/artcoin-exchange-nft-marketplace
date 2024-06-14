@@ -1,0 +1,19 @@
+{
+  "description": "Fierce blueish robot. Avarage in attack and speed.",
+  "image": "https://lavender-labour-wasp-844.mypinata.cloud/ipfs/QmWeMwwG5zKwHSNdhYRP3iHasLfBHHAnDpz6kRCtivqJfq",
+  "name": "Robot #2",
+  "attributes": [
+    {
+      "trait_type": "attack",
+      "value": "40"
+    },
+    {
+      "trait_type": "health",
+      "value": "80"
+    },
+    {
+      "trait_type": "speed",
+      "value": "50"
+    }
+  ]
+}
