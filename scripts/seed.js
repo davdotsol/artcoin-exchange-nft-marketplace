@@ -39,9 +39,24 @@ async function main() {
   console.log(`NFT Marketplace fetched ${nftMarketplace.target}`);
 
   console.log('Mint NFTs');
-  await nftItem.connect(deployer).mint(investor1);
-  await nftItem.connect(deployer).mint(investor1);
-  await nftItem.connect(deployer).mint(investor2);
+  await nftItem
+    .connect(deployer)
+    .mint(
+      investor1,
+      'https://lavender-labour-wasp-844.mypinata.cloud/ipfs/QmeDLUciZ2mtRz4kkhUhQ22nbViAXf5uWmq3eNEksQhjNZ'
+    );
+  await nftItem
+    .connect(deployer)
+    .mint(
+      investor1,
+      'https://lavender-labour-wasp-844.mypinata.cloud/ipfs/QmVZm1fg5zJZPgwfqhUWVmtRR3xF9Us2bL3WHGyBKY5yyd'
+    );
+  await nftItem
+    .connect(deployer)
+    .mint(
+      investor2,
+      'https://lavender-labour-wasp-844.mypinata.cloud/ipfs/QmTwuPFGJgcfReV5R3uBNKoRXMx33W9Yq1yQ9WWAf788CW'
+    );
 
   // Approve the marketplace contract to handle the token
   await nftItem.connect(investor1).approve(nftMarketplace, 0);

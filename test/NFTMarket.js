@@ -27,7 +27,10 @@ describe('NFTMarket Contract', function () {
       await loadFixture(deployFixture);
 
     // Mint the NFT to addr1
-    await nftMarket.mint(addr1);
+    await nftMarket.mint(
+      addr1,
+      'https://api.example.com/ipfs/QmUPjT6jMshvNRvLUPK4qfGuE7W3vFiUfJ7VcQXjN3XDgG'
+    );
 
     // Approve the marketplace contract to handle the token
     await nftMarket.connect(addr1).approve(nftMarketplace, 0);
@@ -55,7 +58,10 @@ describe('NFTMarket Contract', function () {
       const { nftMarket, owner, addr1 } = await loadFixture(deployFixture);
 
       // Mint the NFT to addr1
-      await nftMarket.mint(addr1);
+      await nftMarket.mint(
+        addr1,
+        'https://api.example.com/ipfs/QmUPjT6jMshvNRvLUPK4qfGuE7W3vFiUfJ7VcQXjN3XDgG'
+      );
 
       // Verify the owner of the nft is correct
       expect(await nftMarket.ownerOf(0)).to.equal(addr1.address);
@@ -65,11 +71,14 @@ describe('NFTMarket Contract', function () {
       const { nftMarket, owner, addr1 } = await loadFixture(deployFixture);
 
       // Mint the NFT to addr1
-      await nftMarket.mint(addr1);
+      await nftMarket.mint(
+        addr1,
+        'https://api.example.com/ipfs/QmUPjT6jMshvNRvLUPK4qfGuE7W3vFiUfJ7VcQXjN3XDgG'
+      );
 
       // Verify the token URI is correct
       expect(await nftMarket.tokenURI(0)).to.equal(
-        'https://api.example.com/metadata/0'
+        'https://api.example.com/ipfs/QmUPjT6jMshvNRvLUPK4qfGuE7W3vFiUfJ7VcQXjN3XDgG'
       );
     });
   });
