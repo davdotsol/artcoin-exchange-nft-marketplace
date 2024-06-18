@@ -45,7 +45,6 @@ export const createAccountHook: AccountHookFactory = (deps) => () => {
 
   const handleAccountsChanged = (...args: unknown[]) => {
     const accounts = args[0] as string[];
-    console.log(accounts);
     if (accounts.length === 0) {
       console.error('Please, connect to Web3 wallet');
     } else if (accounts[0] !== data) {

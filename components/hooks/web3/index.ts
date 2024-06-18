@@ -17,3 +17,9 @@ export const useListedNFTs = () => {
   const nfts = useListedNFTs();
   return { nfts };
 };
+
+export const useOwnedNFTs = () => {
+  const { useOwnedNFTs } = useHooks();
+  const nfts = useOwnedNFTs();
+  return { nfts };
+};
