@@ -5,6 +5,7 @@ import { SWRResponse } from 'swr';
 export type Web3Dependencies = {
   provider: ethers.BrowserProvider;
   nftContract: ethers.Contract;
+  marketplaceContract: ethers.Contract;
   ethereum: MetaMaskInpageProvider;
   isLoading: boolean;
 };

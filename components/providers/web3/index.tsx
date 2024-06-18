@@ -40,8 +40,12 @@ const Web3Provider = ({ children }: any) => {
       try {
         const provider = new ethers.BrowserProvider(window.ethereum as any);
         const nftContract = await loadContract('NFTMarket', provider);
+        const marketplaceContract = await loadContract(
+          'NFTMarketplace',
+          provider
+        );
 
-        if (!nftContract) {
+        if (!nftContract || !marketplaceContract) {
           throw new Error('Contract is not loaded');
         }
         setGlobalListeners(window.ethereum);
@@ -50,6 +54,7 @@ const Web3Provider = ({ children }: any) => {
             ethereum: window.ethereum,
             provider,
             nftContract,
+            marketplaceContract,
             isLoading: false,
           })
         );

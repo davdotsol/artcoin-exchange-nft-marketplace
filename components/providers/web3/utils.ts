@@ -23,6 +23,7 @@ export const getDefaultWeb3State = () => {
     ethereum: null,
     provider: null,
     nftContract: null,
+    marketplaceContract: null,
     isLoading: true,
     hooks: setupHooks({ isLoading: true } as any),
   };
@@ -32,14 +33,22 @@ export const getWeb3State = ({
   ethereum,
   provider,
   nftContract,
+  marketplaceContract,
   isLoading,
 }: Web3Dependencies) => {
   return {
     ethereum,
     provider,
     nftContract,
+    marketplaceContract,
     isLoading,
-    hooks: setupHooks({ ethereum, provider, nftContract, isLoading }),
+    hooks: setupHooks({
+      ethereum,
+      provider,
+      nftContract,
+      marketplaceContract,
+      isLoading,
+    }),
   };
 };
 
@@ -56,10 +65,10 @@ export const loadContract = async (name: string, provider: BrowserProvider) => {
 
   const abiRes = await fetch(`/abis/${name}.json`);
   const abi = await abiRes.json();
-  const nftContract = new Contract(
+  const contract = new Contract(
     config[chainIdStr][`${name}`].address,
     abi,
     provider
   );
-  return nftContract;
+  return contract;
 };

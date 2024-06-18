@@ -11,3 +11,14 @@ export type NFTMetaData = {
   image: string;
   attributes: NFTAttribute[];
 };
+
+export type listing = {
+  tokenId: number;
+  seller: string;
+  price: string;
+  sold: boolean;
+};
+
+export type nft = {
+  meta: NFTMetaData;
+} & listing;

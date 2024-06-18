@@ -1,8 +1,8 @@
 import NFTItem from '../item';
-import { NFTMetaData } from '../../../../types/nft';
+import { nft } from '../../../../types/nft';
 
 type NFTListProps = {
-  nfts: NFTMetaData[];
+  nfts: nft[];
 };
 
 const NFTList = ({ nfts }: NFTListProps) => {
@@ -10,7 +10,7 @@ const NFTList = ({ nfts }: NFTListProps) => {
     <div className="mt-12 max-w-lg mx-auto grid gap-5 lg:grid-cols-3 lg:max-w-none">
       {nfts.map((nft) => (
         <div
-          key={nft.image}
+          key={nft.meta.image}
           className="flex flex-col rounded-lg shadow-lg overflow-hidden bg-light"
         >
           <NFTItem nft={nft} />

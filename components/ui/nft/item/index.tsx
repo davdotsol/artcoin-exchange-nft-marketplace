@@ -1,7 +1,7 @@
-import { NFTMetaData } from '../../../../types/nft';
+import { nft } from '../../../../types/nft';
 
 type NFTItemProps = {
-  nft: NFTMetaData;
+  nft: nft;
 };
 
 const NFTItem = ({ nft }: NFTItemProps) => {
@@ -10,7 +10,7 @@ const NFTItem = ({ nft }: NFTItemProps) => {
       <div className="flex-shrink-0">
         <img
           className={`h-full w-full object-cover`}
-          src={nft.image}
+          src={nft.meta.image}
           alt="New NFT"
         />
       </div>
@@ -18,9 +18,11 @@ const NFTItem = ({ nft }: NFTItemProps) => {
         <div className="flex-1">
           <p className="text-sm font-medium text-highlight">Robots NFT</p>
           <div className="block mt-2">
-            <p className="text-xl font-semibold text-secondary">{nft.name}</p>
+            <p className="text-xl font-semibold text-secondary">
+              {nft.meta.name}
+            </p>
             <p className="mt-3 mb-3 text-base text-gray-500">
-              {nft.description}
+              {nft.meta.description}
             </p>
           </div>
         </div>
@@ -41,7 +43,7 @@ const NFTItem = ({ nft }: NFTItemProps) => {
                 </div>
               </dd>
             </div>
-            {nft.attributes.map((attribute) => (
+            {nft.meta.attributes.map((attribute) => (
               <div
                 key={attribute.trait_type}
                 className="flex flex-col px-4 pt-4"
