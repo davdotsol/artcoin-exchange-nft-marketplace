@@ -94,12 +94,12 @@ describe('NFTMarket Contract', function () {
         .to.emit(nftMarketplace, 'NFTListed')
         .withArgs(0, 0, addr1.address, ethers.parseEther('0.05')); // Correct the index for args
 
-      // Verify the listing details
-      const listing = await nftMarketplace.getListing(0);
-      expect(listing.tokenId.toString()).to.equal('0');
-      expect(listing.price.toString()).to.equal('50000000000000000');
-      expect(listing.seller).to.equal(addr1.address);
-      expect(listing.sold).to.be.false;
+      // Verify the nftItem details
+      const nftItem = await nftMarketplace.getNFTItem(0);
+      expect(nftItem.tokenId.toString()).to.equal('0');
+      expect(nftItem.price.toString()).to.equal('50000000000000000');
+      expect(nftItem.seller).to.equal(addr1.address);
+      expect(nftItem.isListed).to.be.true;
     });
 
     it('Should allow buying an NFT', async function () {
@@ -115,8 +115,8 @@ describe('NFTMarket Contract', function () {
         .to.emit(nftMarketplace, 'NFTSold')
         .withArgs(0, 0, addr2.address, ethers.parseEther('0.05'));
 
-      const listing = await nftMarketplace.getListing(0);
-      expect(listing.sold).to.be.true;
+      const nftItem = await nftMarketplace.getNFTItem(0);
+      expect(nftItem.isListed).to.be.false;
     });
 
     it('Should revert if the price is incorrect', async function () {
@@ -132,7 +132,7 @@ describe('NFTMarket Contract', function () {
       ).to.be.revertedWith('Incorrect price');
     });
 
-    it('Should revert if the NFT is already sold', async function () {
+    it('Should revert if the NFT is already is listed', async function () {
       const { nftMarketplace, owner, addr1, addr2 } = await loadFixture(
         marketplaceFixture
       );
@@ -146,7 +146,7 @@ describe('NFTMarket Contract', function () {
         nftMarketplace
           .connect(addr2)
           .buyNFT(0, { value: ethers.parseEther('0.05') })
-      ).to.be.revertedWith('NFT already sold');
+      ).to.be.revertedWith('NFT must be listed');
     });
   });
 });

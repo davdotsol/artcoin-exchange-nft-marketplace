@@ -48,7 +48,7 @@
       {
         "indexed": true,
         "internalType": "uint256",
-        "name": "listingId",
+        "name": "nftItemId",
         "type": "uint256"
       },
       {
@@ -79,7 +79,7 @@
       {
         "indexed": true,
         "internalType": "uint256",
-        "name": "listingId",
+        "name": "nftItemId",
         "type": "uint256"
       },
       {
@@ -127,7 +127,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "listingId",
+        "name": "nftItemId",
         "type": "uint256"
       }
     ],
@@ -140,11 +140,11 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "listingId",
+        "name": "nftItemId",
         "type": "uint256"
       }
     ],
-    "name": "getListing",
+    "name": "getNFTItem",
     "outputs": [
       {
         "components": [
@@ -165,11 +165,11 @@
           },
           {
             "internalType": "bool",
-            "name": "sold",
+            "name": "isListed",
             "type": "bool"
           }
         ],
-        "internalType": "struct NFTMarketplace.Listing",
+        "internalType": "struct NFTMarketplace.NFTItem",
         "name": "",
         "type": "tuple"
       }
@@ -197,7 +197,20 @@
   },
   {
     "inputs": [],
-    "name": "listingCount",
+    "name": "nftContract",
+    "outputs": [
+      {
+        "internalType": "contract IERC721",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "nftItemCount",
     "outputs": [
       {
         "internalType": "uint256",
@@ -216,7 +229,7 @@
         "type": "uint256"
       }
     ],
-    "name": "listings",
+    "name": "nftItems",
     "outputs": [
       {
         "internalType": "uint256",
@@ -235,21 +248,8 @@
       },
       {
         "internalType": "bool",
-        "name": "sold",
+        "name": "isListed",
         "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "nftContract",
-    "outputs": [
-      {
-        "internalType": "contract IERC721",
-        "name": "",
-        "type": "address"
       }
     ],
     "stateMutability": "view",

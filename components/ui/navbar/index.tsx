@@ -29,6 +29,7 @@ export default function Navbar() {
   const { pathname } = useRouter();
   const { account } = useAccount();
   const { network } = useNetwork();
+
   return (
     <Disclosure as="nav" className="bg-secondary">
       {({ open }) => (

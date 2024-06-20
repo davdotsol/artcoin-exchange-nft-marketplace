@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { CryptoHookFactory } from '@_types/hooks';
-import { listing, nft } from '@_types/nft';
+import { nftItem, nft } from '@_types/nft';
 import useSWR from 'swr';
 import { ethers } from 'ethers';
 
@@ -16,17 +16,17 @@ export const createListedNFTsHook: ListedNFTsHookFactory = (deps) => () => {
   const fetcher = async () => {
     const nfts = [] as nft[];
     try {
-      const listingCount = await marketplaceContract!.listingCount();
-      for (let i = 0; i < listingCount; i++) {
+      const nftItemCount = await marketplaceContract?.nftItemCount();
+      for (let i = 0; i < nftItemCount; i++) {
         const tokenURI = await nftContract.tokenURI(i);
-        const listing = (await marketplaceContract.getListing(i)) as listing;
+        const nftItem = (await marketplaceContract.getNFTItem(i)) as nftItem;
         const metaRes = await fetch(tokenURI);
         const meta = await metaRes.json();
         nfts.push({
-          tokenId: parseInt(listing.tokenId.toString()),
-          seller: listing.seller,
-          price: parseFloat(ethers.formatEther(listing.price)),
-          sold: listing.sold,
+          tokenId: parseInt(nftItem.tokenId.toString()),
+          seller: nftItem.seller,
+          price: parseFloat(ethers.formatEther(nftItem.price)),
+          isListed: nftItem.isListed,
           meta,
         });
       }

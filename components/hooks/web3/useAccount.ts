@@ -19,8 +19,7 @@ export const createAccountHook: AccountHookFactory = (deps) => () => {
     if (!provider) {
       throw new Error('Provider is not defined');
     }
-    const accounts = await provider.listAccounts();
-    const account = accounts[0];
+    const account = await provider.getSigner();
     if (!account) {
       throw new Error('Account is not defined');
     }

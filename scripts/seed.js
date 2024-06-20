@@ -68,6 +68,11 @@ async function main() {
   await nftMarketplace.connect(investor1).listNFT(1, ethers.parseEther('0.05'));
   await nftMarketplace.connect(investor2).listNFT(2, ethers.parseEther('0.05'));
 
+  console.log('Buy NFT');
+  await nftMarketplace
+    .connect(investor3)
+    .buyNFT(2, { value: ethers.parseEther('0.05') });
+
   console.log(`Finished.\n`);
 }
 

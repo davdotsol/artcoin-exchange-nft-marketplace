@@ -7,25 +7,25 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 contract NFTMarketplace is Ownable, ReentrancyGuard {
-    struct Listing {
+    struct NFTItem {
         uint256 tokenId;
         address payable seller;
         uint256 price;
-        bool sold;
+        bool isListed;
     }
 
     IERC721 public nftContract;
-    mapping(uint256 => Listing) public listings;
-    uint256 public listingCount;
+    mapping(uint256 => NFTItem) public nftItems;
+    uint256 public nftItemCount;
 
     event NFTListed(
-        uint256 indexed listingId,
+        uint256 indexed nftItemId,
         uint256 indexed tokenId,
         address seller,
         uint256 price
     );
     event NFTSold(
-        uint256 indexed listingId,
+        uint256 indexed nftItemId,
         uint256 indexed tokenId,
         address buyer,
         uint256 price
@@ -47,30 +47,30 @@ contract NFTMarketplace is Ownable, ReentrancyGuard {
 
         nftContract.transferFrom(msg.sender, address(this), tokenId);
 
-        listings[listingCount] = Listing({
+        nftItems[nftItemCount] = NFTItem({
             tokenId: tokenId,
             seller: payable(msg.sender),
             price: price,
-            sold: false
+            isListed: true
         });
 
-        emit NFTListed(listingCount, tokenId, msg.sender, price);
-        listingCount++;
+        emit NFTListed(nftItemCount, tokenId, msg.sender, price);
+        nftItemCount++;
     }
 
-    function buyNFT(uint256 listingId) external payable nonReentrant {
-        Listing storage listing = listings[listingId];
-        require(msg.value == listing.price, "Incorrect price");
-        require(!listing.sold, "NFT already sold");
-        listing.seller.transfer(msg.value);
-        nftContract.transferFrom(address(this), msg.sender, listing.tokenId);
-        listing.sold = true;
-        emit NFTSold(listingId, listing.tokenId, msg.sender, listing.price);
+    function buyNFT(uint256 nftItemId) external payable nonReentrant {
+        NFTItem storage nftItem = nftItems[nftItemId];
+        require(msg.value == nftItem.price, "Incorrect price");
+        require(nftItem.isListed, "NFT must be listed");
+        nftItem.seller.transfer(msg.value);
+        nftContract.transferFrom(address(this), msg.sender, nftItem.tokenId);
+        nftItem.isListed = false;
+        emit NFTSold(nftItemId, nftItem.tokenId, msg.sender, nftItem.price);
     }
 
-    function getListing(
-        uint256 listingId
-    ) external view returns (Listing memory) {
-        return listings[listingId];
+    function getNFTItem(
+        uint256 nftItemId
+    ) external view returns (NFTItem memory) {
+        return nftItems[nftItemId];
     }
 }

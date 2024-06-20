@@ -12,13 +12,13 @@ export type NFTMetaData = {
   attributes: NFTAttribute[];
 };
 
-export type listing = {
+export type nftItem = {
   tokenId: number;
   seller: string;
   price: string;
-  sold: boolean;
+  isListed: boolean;
 };
 
 export type nft = {
   meta: NFTMetaData;
-} & listing;
+} & nftItem;
