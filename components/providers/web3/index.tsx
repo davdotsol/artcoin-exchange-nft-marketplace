@@ -47,6 +47,7 @@ const Web3Provider = ({ children }: any) => {
 
         const signer = await provider.getSigner();
         const signedMarketplaceContract = marketplaceContract.connect(signer);
+        const signedNFTContract = nftContract.connect(signer);
 
         if (!nftContract || !marketplaceContract) {
           throw new Error('Contract is not loaded');
@@ -56,7 +57,7 @@ const Web3Provider = ({ children }: any) => {
           getWeb3State({
             ethereum: window.ethereum,
             provider,
-            nftContract,
+            nftContract: signedNFTContract,
             marketplaceContract: signedMarketplaceContract,
             isLoading: false,
           })

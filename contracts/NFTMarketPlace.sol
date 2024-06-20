@@ -19,6 +19,8 @@ contract NFTMarketplace is Ownable, ReentrancyGuard {
     uint256 public nftItemCount;
     mapping(address => uint256[]) private ownedNFTs;
     mapping(address => mapping(uint256 => uint256)) private ownedNFTsIndex;
+    mapping(uint256 => bool) public tokenIdToListingExists;
+    uint256[] public tokenIds;
 
     event NFTListed(
         uint256 indexed nftItemId,
@@ -49,19 +51,31 @@ contract NFTMarketplace is Ownable, ReentrancyGuard {
 
         nftContract.transferFrom(msg.sender, address(this), tokenId);
 
-        nftItems[nftItemCount] = NFTItem({
-            tokenId: tokenId,
-            seller: payable(msg.sender),
-            price: price,
-            isListed: true
-        });
+        if (tokenIdToListingExists[tokenId]) {
+            NFTItem storage item = nftItems[tokenId];
+
+            // Update the listing
+            item.seller = payable(msg.sender);
+            item.price = price;
+            item.isListed = true;
+
+            emit NFTListed(nftItemCount, tokenId, msg.sender, price);
+        } else {
+            nftItems[nftItemCount] = NFTItem({
+                tokenId: tokenId,
+                seller: payable(msg.sender),
+                price: price,
+                isListed: true
+            });
+            tokenIdToListingExists[tokenId] = true;
+            tokenIds.push(tokenId);
+            emit NFTListed(nftItemCount, tokenId, msg.sender, price);
+            nftItemCount++;
+        }
 
         if (ownedNFTs[msg.sender].length > 0) {
             _removeOwnedNFT(msg.sender, tokenId);
         }
-
-        emit NFTListed(nftItemCount, tokenId, msg.sender, price);
-        nftItemCount++;
     }
 
     function buyNFT(uint256 nftItemId) external payable nonReentrant {
