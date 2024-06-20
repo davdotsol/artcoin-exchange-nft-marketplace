@@ -2,9 +2,10 @@ import { nft } from '../../../../types/nft';
 
 type NFTItemProps = {
   nft: nft;
+  buyNFT: (tokenId: number, value: number) => Promise<void>;
 };
 
-const NFTItem = ({ nft }: NFTItemProps) => {
+const NFTItem = ({ nft, buyNFT }: NFTItemProps) => {
   return (
     <>
       <div className="flex-shrink-0">
@@ -62,6 +63,9 @@ const NFTItem = ({ nft }: NFTItemProps) => {
           <button
             type="button"
             className="disabled:bg-light disabled:text-secondary disabled:border-secondary disabled:shadow-none disabled:cursor-not-allowed mr-2 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-highlight hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary"
+            onClick={() => {
+              buyNFT(nft.tokenId, nft.price);
+            }}
           >
             Buy
           </button>

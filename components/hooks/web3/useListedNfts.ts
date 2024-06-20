@@ -4,7 +4,9 @@ import { nftItem, nft } from '@_types/nft';
 import useSWR from 'swr';
 import { ethers } from 'ethers';
 
-type UseListedNFTsResponse = {};
+type UseListedNFTsResponse = {
+  buyNFT: (tokenId: number, value: number) => Promise<void>;
+};
 
 type ListedNFTsHookFactory = CryptoHookFactory<any, UseListedNFTsResponse>;
 
@@ -38,8 +40,19 @@ export const createListedNFTsHook: ListedNFTsHookFactory = (deps) => () => {
 
   const { data, ...swr } = useSWR<string>('web3/useListedNFTs', fetcher);
 
+  const buyNFT = async (tokenId: number, value: number) => {
+    try {
+      await marketplaceContract?.buyNFT(tokenId, {
+        value: ethers.parseEther(value.toString()),
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return {
     ...swr,
+    buyNFT,
     data: data || [],
   };
 };
