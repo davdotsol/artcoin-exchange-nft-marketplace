@@ -16,22 +16,24 @@ export const createOwnedNFTsHook: OwnedNFTsHookFactory = (deps) => () => {
   const fetcher = async () => {
     const nfts = [] as nft[];
     try {
-      const nftItemCount = await marketplaceContract!.nftItemCount();
       const signer = await provider.getSigner();
-      for (let i = 0; i < nftItemCount; i++) {
-        const tokenURI = await nftContract.tokenURI(i);
-        const nftItem = (await marketplaceContract.getNFTItem(i)) as nftItem;
+      const ownedNFTs = await marketplaceContract!.getOwnedNFTs(signer.address);
+      for (let i = 0; i < ownedNFTs.length; i++) {
+        const tokenId = ownedNFTs[i];
+        const tokenURI = await nftContract.tokenURI(tokenId);
+        console.log(tokenURI);
+        const nftItem = (await marketplaceContract.getNFTItem(
+          tokenId
+        )) as nftItem;
         const metaRes = await fetch(tokenURI);
         const meta = await metaRes.json();
-        if (nftItem.seller === signer.address) {
-          nfts.push({
-            tokenId: parseInt(nftItem.tokenId.toString()),
-            seller: nftItem.seller,
-            price: parseFloat(ethers.formatEther(nftItem.price)),
-            isListed: nftItem.isListed,
-            meta,
-          });
-        }
+        nfts.push({
+          tokenId: parseInt(nftItem.tokenId.toString()),
+          seller: nftItem.seller,
+          price: parseFloat(ethers.formatEther(nftItem.price)),
+          isListed: nftItem.isListed,
+          meta,
+        });
       }
     } catch (error) {
       console.log(error);

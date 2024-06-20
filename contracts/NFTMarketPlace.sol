@@ -17,6 +17,8 @@ contract NFTMarketplace is Ownable, ReentrancyGuard {
     IERC721 public nftContract;
     mapping(uint256 => NFTItem) public nftItems;
     uint256 public nftItemCount;
+    mapping(address => uint256[]) private ownedNFTs;
+    mapping(address => mapping(uint256 => uint256)) private ownedNFTsIndex;
 
     event NFTListed(
         uint256 indexed nftItemId,
@@ -54,6 +56,10 @@ contract NFTMarketplace is Ownable, ReentrancyGuard {
             isListed: true
         });
 
+        if (ownedNFTs[msg.sender].length > 0) {
+            _removeOwnedNFT(msg.sender, tokenId);
+        }
+
         emit NFTListed(nftItemCount, tokenId, msg.sender, price);
         nftItemCount++;
     }
@@ -65,6 +71,7 @@ contract NFTMarketplace is Ownable, ReentrancyGuard {
         nftItem.seller.transfer(msg.value);
         nftContract.transferFrom(address(this), msg.sender, nftItem.tokenId);
         nftItem.isListed = false;
+        _addOwnedNFT(msg.sender, nftItem.tokenId);
         emit NFTSold(nftItemId, nftItem.tokenId, msg.sender, nftItem.price);
     }
 
@@ -72,5 +79,32 @@ contract NFTMarketplace is Ownable, ReentrancyGuard {
         uint256 nftItemId
     ) external view returns (NFTItem memory) {
         return nftItems[nftItemId];
+    }
+
+    function getOwnedNFTs(
+        address owner
+    ) external view returns (uint256[] memory) {
+        return ownedNFTs[owner];
+    }
+
+    function _addOwnedNFT(address owner, uint256 tokenId) internal {
+        uint256 length = ownedNFTs[owner].length;
+        ownedNFTs[owner].push(tokenId);
+        ownedNFTsIndex[owner][tokenId] = length;
+    }
+
+    function _removeOwnedNFT(address owner, uint256 tokenId) internal {
+        uint256 lastTokenIndex = ownedNFTs[owner].length - 1;
+        uint256 tokenIndex = ownedNFTsIndex[owner][tokenId];
+
+        if (tokenIndex != lastTokenIndex) {
+            uint256 lastTokenId = ownedNFTs[owner][lastTokenIndex];
+
+            ownedNFTs[owner][tokenIndex] = lastTokenId;
+            ownedNFTsIndex[owner][lastTokenId] = tokenIndex;
+        }
+
+        ownedNFTs[owner].pop();
+        delete ownedNFTsIndex[owner][tokenId];
     }
 }

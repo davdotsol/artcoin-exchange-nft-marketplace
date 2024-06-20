@@ -12,7 +12,7 @@ function classNames(...classes: string[]) {
 
 const ProfilePage = () => {
   const { nfts } = useOwnedNFTs();
-  const [activeNFT, setActiveNFT] = useState<nft>();
+  const [activeNFT, setActiveNFT] = useState<nft>(null);
 
   useEffect(() => {
     if (nfts.data && nfts.data.length > 0) {
@@ -21,6 +21,7 @@ const ProfilePage = () => {
 
     return () => setActiveNFT(undefined);
   }, [nfts.data]);
+
   return (
     <BaseLayout>
       <div className="h-full flex">
