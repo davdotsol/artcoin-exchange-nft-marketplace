@@ -85,7 +85,7 @@ contract NFTMarketplace is Ownable, ReentrancyGuard {
         nftItem.seller.transfer(msg.value);
         nftContract.transferFrom(address(this), msg.sender, nftItem.tokenId);
         nftItem.isListed = false;
-        _addOwnedNFT(msg.sender, nftItem.tokenId);
+        _addOwnedNFT(msg.sender, nftItemId);
         emit NFTSold(nftItemId, nftItem.tokenId, msg.sender, nftItem.price);
     }
 

@@ -19,12 +19,9 @@ export const createListedNFTsHook: ListedNFTsHookFactory = (deps) => () => {
     const nfts = [] as nft[];
     try {
       const nftItemCount = await marketplaceContract?.nftItemCount();
-      const tokenIds = await marketplaceContract?.tokenIds();
-      console.log('list of token ids', tokenIds);
       for (let i = 0; i < nftItemCount; i++) {
         const tokenURI = await nftContract.tokenURI(i);
-        const tId = tokenIds[i];
-        console.log('token id', tId);
+        const tId = await marketplaceContract?.tokenIds(i);
         const nftItem = (await marketplaceContract.getNFTItem(tId)) as nftItem;
         const metaRes = await fetch(tokenURI);
         const meta = await metaRes.json();
@@ -50,7 +47,7 @@ export const createListedNFTsHook: ListedNFTsHookFactory = (deps) => () => {
         value: ethers.parseEther(value.toString()),
       });
 
-      await tx.wait();
+      const result = await tx.wait();
     } catch (error) {
       console.log(error);
     }

@@ -23,7 +23,6 @@ export const createOwnedNFTsHook: OwnedNFTsHookFactory = (deps) => () => {
       for (let i = 0; i < ownedNFTs.length; i++) {
         const tokenId = ownedNFTs[i];
         const tokenURI = await nftContract.tokenURI(tokenId);
-        console.log(tokenURI);
         const nftItem = (await marketplaceContract.getNFTItem(
           tokenId
         )) as nftItem;
