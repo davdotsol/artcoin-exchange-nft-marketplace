@@ -72,16 +72,15 @@ contract NFTMarketplace is Ownable, ReentrancyGuard {
             emit NFTListed(nftItemCount, tokenId, msg.sender, price);
             nftItemCount++;
         }
-
-        if (ownedNFTs[msg.sender].length > 0) {
-            _removeOwnedNFT(msg.sender, tokenId);
-        }
     }
 
     function buyNFT(uint256 nftItemId) external payable nonReentrant {
         NFTItem storage nftItem = nftItems[nftItemId];
         require(msg.value == nftItem.price, "Incorrect price");
         require(nftItem.isListed, "NFT must be listed");
+        if (ownedNFTs[nftItem.seller].length > 0) {
+            _removeOwnedNFT(nftItem.seller, nftItemId);
+        }
         nftItem.seller.transfer(msg.value);
         nftContract.transferFrom(address(this), msg.sender, nftItem.tokenId);
         nftItem.isListed = false;

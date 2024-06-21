@@ -148,6 +148,7 @@ describe('NFTMarket Contract', function () {
           .buyNFT(0, { value: ethers.parseEther('0.05') })
       ).to.be.revertedWith('NFT must be listed');
     });
+
     it('Should correctly add and remove owned NFTs', async function () {
       const { nftMarket, nftMarketplace, owner, addr1, addr2 } =
         await loadFixture(marketplaceFixture);
@@ -161,14 +162,29 @@ describe('NFTMarket Contract', function () {
         .connect(addr2)
         .buyNFT(0, { value: ethers.parseEther('0.05') });
       ownedNFTs = await nftMarketplace.getOwnedNFTs(addr2.address);
+      expect(ownedNFTs.length).to.equal(1);
       expect(ownedNFTs).to.deep.equal([0n]);
 
       // List the NFT again
       await nftMarket.connect(addr2).approve(nftMarketplace.target, 0);
       await nftMarketplace.connect(addr2).listNFT(0, ethers.parseEther('0.1'));
 
+      // Verify NFT is still listed under addr2's ownership
+      ownedNFTs = await nftMarketplace.getOwnedNFTs(addr2.address);
+      expect(ownedNFTs.length).to.equal(1);
+      expect(ownedNFTs).to.deep.equal([0n]);
+
+      // Verify new owner has the NFT in their list after buying
+      await nftMarketplace
+        .connect(addr1)
+        .buyNFT(0, { value: ethers.parseEther('0.1') });
+      ownedNFTs = await nftMarketplace.getOwnedNFTs(addr1.address);
+      expect(ownedNFTs.length).to.equal(1);
+      expect(ownedNFTs).to.deep.equal([0n]);
+
       // Verify NFT is no longer listed under addr2's ownership
       ownedNFTs = await nftMarketplace.getOwnedNFTs(addr2.address);
+      expect(ownedNFTs.length).to.equal(0);
       expect(ownedNFTs).to.deep.equal([]);
     });
   });
