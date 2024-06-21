@@ -20,9 +20,9 @@ export const createListedNFTsHook: ListedNFTsHookFactory = (deps) => () => {
     try {
       const nftItemCount = await marketplaceContract?.nftItemCount();
       for (let i = 0; i < nftItemCount; i++) {
-        const tokenURI = await nftContract.tokenURI(i);
+        const tokenURI = await nftContract?.tokenURI(i);
         const tId = await marketplaceContract?.tokenIds(i);
-        const nftItem = (await marketplaceContract.getNFTItem(tId)) as nftItem;
+        const nftItem = (await marketplaceContract?.getNFTItem(tId)) as nftItem;
         const metaRes = await fetch(tokenURI);
         const meta = await metaRes.json();
         nfts.push({
@@ -39,7 +39,7 @@ export const createListedNFTsHook: ListedNFTsHookFactory = (deps) => () => {
     return nfts;
   };
 
-  const { data, ...swr } = useSWR<string>('web3/useListedNFTs', fetcher);
+  const { data, ...swr } = useSWR('web3/useListedNFTs', fetcher);
 
   const buyNFT = useCallback(
     async (tokenId: number, value: number) => {

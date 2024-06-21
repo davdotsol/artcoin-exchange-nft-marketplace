@@ -1,5 +1,5 @@
 import { createContext, useState, useContext, useEffect } from 'react';
-import { ethers } from 'ethers';
+import { Contract, ethers } from 'ethers';
 import { MetaMaskInpageProvider } from '@metamask/providers';
 import {
   getDefaultWeb3State,
@@ -46,8 +46,8 @@ const Web3Provider = ({ children }: any) => {
         );
 
         const signer = await provider.getSigner();
-        const signedMarketplaceContract = marketplaceContract.connect(signer);
-        const signedNFTContract = nftContract.connect(signer);
+        const signedMarketplaceContract = marketplaceContract?.connect(signer);
+        const signedNFTContract = nftContract?.connect(signer);
 
         if (!nftContract || !marketplaceContract) {
           throw new Error('Contract is not loaded');
@@ -57,8 +57,9 @@ const Web3Provider = ({ children }: any) => {
           getWeb3State({
             ethereum: window.ethereum,
             provider,
-            nftContract: signedNFTContract,
-            marketplaceContract: signedMarketplaceContract,
+            nftContract: signedNFTContract as unknown as Contract,
+            marketplaceContract:
+              signedMarketplaceContract as unknown as Contract,
             isLoading: false,
           })
         );

@@ -15,7 +15,7 @@ export type NFTMetaData = {
 export type nftItem = {
   tokenId: number;
   seller: string;
-  price: string;
+  price: number;
   isListed: boolean;
 };
 

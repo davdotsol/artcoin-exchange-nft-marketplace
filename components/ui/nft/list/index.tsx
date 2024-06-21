@@ -11,8 +11,8 @@ const NFTList = () => {
   return (
     <div className="mt-12 max-w-lg mx-auto grid gap-5 lg:grid-cols-3 lg:max-w-none">
       {nfts.data
-        ?.filter((nft) => nft.isListed)
-        .map((nft) => (
+        ?.filter((nft: nft) => nft.isListed)
+        .map((nft: nft) => (
           <div
             key={nft.meta.image}
             className="flex flex-col rounded-lg shadow-lg overflow-hidden bg-light"
