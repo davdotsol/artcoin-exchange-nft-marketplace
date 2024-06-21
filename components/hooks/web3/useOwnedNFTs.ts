@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { CryptoHookFactory } from '@_types/hooks';
 import { nftItem, nft } from '@_types/nft';
 import useSWR from 'swr';
@@ -19,7 +19,7 @@ export const createOwnedNFTsHook: OwnedNFTsHookFactory = (deps) => () => {
     const nfts = [] as nft[];
     try {
       const signer = await provider.getSigner();
-      const ownedNFTs = await marketplaceContract!.getOwnedNFTs(signer.address);
+      const ownedNFTs = await marketplaceContract?.getOwnedNFTs(signer.address);
       for (let i = 0; i < ownedNFTs.length; i++) {
         const tokenId = ownedNFTs[i];
         const tokenURI = await nftContract.tokenURI(tokenId);
@@ -44,19 +44,22 @@ export const createOwnedNFTsHook: OwnedNFTsHookFactory = (deps) => () => {
 
   const { data, ...swr } = useSWR<string>('web3/useListedNFTs', fetcher);
 
-  const listNFT = async (tokenId: number, value: number) => {
-    try {
-      await nftContract.approve(marketplaceContract.target, tokenId);
-      const tx = await marketplaceContract?.listNFT(
-        tokenId,
-        ethers.parseEther(value.toString())
-      );
+  const listNFT = useCallback(
+    async (tokenId: number, value: number) => {
+      try {
+        await nftContract.approve(marketplaceContract.target, tokenId);
+        const tx = await marketplaceContract?.listNFT(
+          tokenId,
+          ethers.parseEther(value.toString())
+        );
 
-      await tx.wait();
-    } catch (error) {
-      console.log(error);
-    }
-  };
+        await tx.wait();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [marketplaceContract]
+  );
 
   return {
     ...swr,

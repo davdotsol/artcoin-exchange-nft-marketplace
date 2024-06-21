@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { CryptoHookFactory } from '@_types/hooks';
 import { nftItem, nft } from '@_types/nft';
 import useSWR from 'swr';
@@ -41,17 +41,21 @@ export const createListedNFTsHook: ListedNFTsHookFactory = (deps) => () => {
 
   const { data, ...swr } = useSWR<string>('web3/useListedNFTs', fetcher);
 
-  const buyNFT = async (tokenId: number, value: number) => {
-    try {
-      const tx = await marketplaceContract?.buyNFT(tokenId, {
-        value: ethers.parseEther(value.toString()),
-      });
+  const buyNFT = useCallback(
+    async (tokenId: number, value: number) => {
+      console.log('buy NFT price', value);
+      try {
+        const tx = await marketplaceContract?.buyNFT(tokenId, {
+          value: ethers.parseEther(value.toString()),
+        });
 
-      const result = await tx.wait();
-    } catch (error) {
-      console.log(error);
-    }
-  };
+        const result = await tx.wait();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [marketplaceContract]
+  );
 
   return {
     ...swr,
