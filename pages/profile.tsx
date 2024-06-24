@@ -12,7 +12,7 @@ function classNames(...classes: string[]) {
 
 const ProfilePage = () => {
   const { nfts } = useOwnedNFTs();
-  const [activeNFT, setActiveNFT] = useState<nft>(null);
+  const [activeNFT, setActiveNFT] = useState<nft>();
 
   useEffect(() => {
     if (nfts.data && nfts.data.length > 0) {
