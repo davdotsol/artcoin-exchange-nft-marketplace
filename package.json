@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ethereumjs/util": "^9.0.3",
     "@headlessui/react": "^2.0.4",
     "@heroicons/react": "^2.1.3",
     "@metamask/providers": "^17.0.0",

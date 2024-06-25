@@ -4,9 +4,11 @@ import axios from 'axios';
 
 import { BaseLayout } from '@ui';
 import { NFTMetaData } from '@_types/nft';
+import { useWeb3 } from '@providers/web3';
 const ATTRIBUTES = ['health', 'attack', 'speed'];
 
 const CreatePage = () => {
+  const { ethereum } = useWeb3();
   const [nftURI, setNftURI] = useState('');
   const [hasURI, setHasURI] = useState(false);
   const [nftMeta, setNFTMeta] = useState<NFTMetaData>({
@@ -39,6 +41,27 @@ const CreatePage = () => {
   const createNFT = async () => {
     try {
       const messageToSign = await axios.get('/api/verify');
+      const accounts = (await ethereum?.request({
+        method: 'eth_requestAccounts',
+      })) as string[];
+      const account = accounts[0];
+
+      const signedData = await ethereum?.request({
+        method: 'personal_sign',
+        params: [
+          JSON.stringify(messageToSign.data),
+          account,
+          messageToSign.data.id,
+        ],
+      });
+
+      await axios.post('/api/verify', {
+        address: account,
+        signature: signedData,
+        nft: nftMeta,
+      });
+
+      console.log('signed data', signedData);
     } catch (error) {
       console.log(error);
     }
