@@ -52,7 +52,7 @@ const Web3Provider = ({ children }: any) => {
         if (!nftContract || !marketplaceContract) {
           throw new Error('Contract is not loaded');
         }
-        setGlobalListeners(window.ethereum);
+        setTimeout(() => setGlobalListeners(window.ethereum), 1000);
         setWeb3Api(
           getWeb3State({
             ethereum: window.ethereum,

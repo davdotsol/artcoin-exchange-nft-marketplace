@@ -43,7 +43,6 @@ export const createListedNFTsHook: ListedNFTsHookFactory = (deps) => () => {
 
   const buyNFT = useCallback(
     async (tokenId: number, value: number) => {
-      console.log('buy NFT price', value);
       try {
         const tx = await marketplaceContract?.buyNFT(tokenId, {
           value: ethers.parseEther(value.toString()),

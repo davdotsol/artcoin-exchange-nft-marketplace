@@ -1,12 +1,48 @@
-import { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { Switch } from '@headlessui/react';
+import axios from 'axios';
 
 import { BaseLayout } from '@ui';
+import { NFTMetaData } from '@_types/nft';
 const ATTRIBUTES = ['health', 'attack', 'speed'];
 
 const CreatePage = () => {
   const [nftURI, setNftURI] = useState('');
   const [hasURI, setHasURI] = useState(false);
+  const [nftMeta, setNFTMeta] = useState<NFTMetaData>({
+    name: '',
+    description: '',
+    image: '',
+    attributes: [
+      { trait_type: 'attack', value: '0' },
+      { trait_type: 'health', value: '0' },
+      { trait_type: 'speed', value: '0' },
+    ],
+  });
+
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setNFTMeta({ ...nftMeta, [name]: value });
+  };
+
+  const handleAttributeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    const attributeIdx = nftMeta.attributes.findIndex(
+      (attr) => attr.trait_type === name
+    );
+    nftMeta.attributes[attributeIdx].value = value;
+    setNFTMeta({ ...nftMeta, attributes: nftMeta.attributes });
+  };
+
+  const createNFT = async () => {
+    try {
+      const messageToSign = await axios.get('/api/verify');
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <BaseLayout>
       <div>
@@ -144,6 +180,8 @@ const CreatePage = () => {
                       </label>
                       <div className="mt-1 flex rounded-md shadow-sm">
                         <input
+                          onChange={handleChange}
+                          value={nftMeta.name}
                           type="text"
                           name="name"
                           id="name"
@@ -161,12 +199,13 @@ const CreatePage = () => {
                       </label>
                       <div className="mt-1">
                         <textarea
+                          onChange={handleChange}
+                          value={nftMeta.description}
                           id="description"
                           name="description"
                           rows={3}
                           className="shadow-sm focus:ring-highlight focus:border-highlight mt-1 block w-full sm:text-sm border-gray-300 rounded-md"
                           placeholder="Some nft description..."
-                          defaultValue={''}
                         />
                       </div>
                       <p className="mt-2 text-sm text-gray-500">
@@ -224,21 +263,23 @@ const CreatePage = () => {
                       </div>
                     )}
                     <div className="grid grid-cols-6 gap-6">
-                      {ATTRIBUTES.map((attribute) => (
+                      {nftMeta.attributes.map((attribute) => (
                         <div
-                          key={attribute}
+                          key={attribute.trait_type}
                           className="col-span-6 sm:col-span-6 lg:col-span-2"
                         >
                           <label
-                            htmlFor={attribute}
+                            htmlFor={attribute.trait_type}
                             className="block text-sm font-medium text-gray-700"
                           >
-                            {attribute}
+                            {attribute.trait_type}
                           </label>
                           <input
+                            onChange={handleAttributeChange}
+                            value={attribute.value}
                             type="text"
-                            name={attribute}
-                            id={attribute}
+                            name={attribute.trait_type}
+                            id={attribute.trait_type}
                             className="mt-1 focus:ring-highlight focus:border-highlight block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                           />
                         </div>
@@ -250,10 +291,11 @@ const CreatePage = () => {
                   </div>
                   <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
                     <button
+                      onClick={createNFT}
                       type="button"
                       className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-highlight hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-highlight"
                     >
-                      Save
+                      List
                     </button>
                   </div>
                 </div>

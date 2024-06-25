@@ -14,17 +14,21 @@
     "@metamask/providers": "^17.0.0",
     "@openzeppelin/contracts": "^5.0.2",
     "@tailwindcss/forms": "^0.5.7",
+    "axios": "^1.7.2",
     "ethers": "^6.13.0",
     "next": "14.2.3",
+    "next-iron-session": "^4.2.0",
     "react": "^18",
     "react-dom": "^18",
-    "swr": "^2.2.5"
+    "swr": "^2.2.5",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/uuid": "^10.0.0",
     "eslint": "^8",
     "eslint-config-next": "14.2.3",
     "hardhat": "^2.22.5",
