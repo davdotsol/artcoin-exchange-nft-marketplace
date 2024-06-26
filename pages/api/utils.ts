@@ -20,6 +20,8 @@ import NFT_MARKETPLACE_ABI from '../../public/abis/NFTMarketplace.json';
 // type NETWORK = typeof NETWORKS;
 
 const targetNetwork = process.env.NEXT_PUBLIC_NETWORK_ID as string;
+const pinataApiKey = process.env.PINATA_API_KEY as string;
+const pinataSecretApiKey = process.env.PINATA_SECRET_API_KEY as string;
 
 export function contractAddress() {
   // const res = await fetch(`/config/config.json`);
@@ -57,18 +59,13 @@ export const addressCheckMiddleware = async (
 
     let nonce: string | Buffer = JSON.stringify(message);
 
-    // nonce = ethers.keccak256(Buffer.from(nonce, 'utf-8'));
-
     const chainId = BigInt(targetNetwork); // Ropsten
 
-    const echash = hashPersonalMessage(Buffer.from(nonce, 'utf-8'));
-    // const r = hexToBytes('0x99e71a99cb2270b8cac5254f9e99b6210c6c10224a1579cf389ef88b20a1abe9')
-    // const s = hexToBytes('0x129ff05af364204442bdb53ab6f18a99ab48acc9326fa689f228040429e3ca66')
-    // const v = BigInt(41)
+    nonce = hashPersonalMessage(Buffer.from(nonce, 'utf-8'));
 
     const { v, r, s } = fromRpcSig(req.body.signature);
 
-    const pubkey = ecrecover(echash, v, r, s);
+    const pubkey = ecrecover(nonce, v, r, s);
 
     const address = bytesToHex(pubToAddress(pubkey));
 

@@ -3,7 +3,7 @@ import { Switch } from '@headlessui/react';
 import axios from 'axios';
 
 import { BaseLayout } from '@ui';
-import { NFTMetaData } from '@_types/nft';
+import { NFTMetaData, PinataRes } from '@_types/nft';
 import { useWeb3 } from '@providers/web3';
 const ATTRIBUTES = ['health', 'attack', 'speed'];
 
@@ -22,6 +22,34 @@ const CreatePage = () => {
     ],
   });
 
+  const handleUploadImage = (e: ChangeEvent<HtmlInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) {
+      console.error('Select a file');
+      return;
+    }
+    const file = e.target.files[0];
+    const buffer = await file.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+    try {
+      const { signedData, account } = await signedData();
+      const res = await axios.post('/api/verify-image', {
+        address: account,
+        signature: signedData,
+        bytes,
+        contentType: file.type,
+        fileName: file.name.replace(/\.[^/.]+$/, ''),
+      });
+      const data = res.data as PinataRes;
+
+      setNFTMeta({
+        ...nftMeta,
+        image: `${process.env.NEXT_PUBLIC_PINATA_DOMAIN}/ipfs/${data.IpfsHash}`,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -38,23 +66,27 @@ const CreatePage = () => {
     setNFTMeta({ ...nftMeta, attributes: nftMeta.attributes });
   };
 
+  const getSignedData = async () => {
+    const messageToSign = await axios.get('/api/verify');
+    const accounts = (await ethereum?.request({
+      method: 'eth_requestAccounts',
+    })) as string[];
+    const account = accounts[0];
+
+    const signedData = await ethereum?.request({
+      method: 'personal_sign',
+      params: [
+        JSON.stringify(messageToSign.data),
+        account,
+        messageToSign.data.id,
+      ],
+    });
+    return { signedData, account };
+  };
+
   const createNFT = async () => {
     try {
-      const messageToSign = await axios.get('/api/verify');
-      const accounts = (await ethereum?.request({
-        method: 'eth_requestAccounts',
-      })) as string[];
-      const account = accounts[0];
-
-      const signedData = await ethereum?.request({
-        method: 'personal_sign',
-        params: [
-          JSON.stringify(messageToSign.data),
-          account,
-          messageToSign.data.id,
-        ],
-      });
-
+      const { signedData, account } = await signedData();
       await axios.post('/api/verify', {
         address: account,
         signature: signedData,
@@ -236,12 +268,8 @@ const CreatePage = () => {
                       </p>
                     </div>
                     {/* Has Image? */}
-                    {false ? (
-                      <img
-                        src="https://robohash.org/Robot_1.png"
-                        alt=""
-                        className="h-40"
-                      />
+                    {nftMeta.image ? (
+                      <img src={nftMeta.image} alt="" className="h-40" />
                     ) : (
                       <div>
                         <label className="block text-sm font-medium text-gray-700">
@@ -270,6 +298,7 @@ const CreatePage = () => {
                               >
                                 <span>Upload a file</span>
                                 <input
+                                  onChange={handleUploadImage}
                                   id="file-upload"
                                   name="file-upload"
                                   type="file"
