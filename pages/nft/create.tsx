@@ -7,9 +7,12 @@ import { NFTMetaData } from '@_types/nft';
 import { useWeb3 } from '@providers/web3';
 const ATTRIBUTES = ['health', 'attack', 'speed'];
 
+const ALLOWED_FIELDS = ['name', 'description', 'image', 'attributes'];
+
 const CreatePage = () => {
-  const { ethereum } = useWeb3();
+  const { ethereum, nftContract, nftMarketplace, provider } = useWeb3();
   const [nftURI, setNftURI] = useState('');
+  const [price, setPrice] = useState(0);
   const [hasURI, setHasURI] = useState(false);
   const [nftMeta, setNFTMeta] = useState<NFTMetaData>({
     name: '',
@@ -55,13 +58,40 @@ const CreatePage = () => {
         ],
       });
 
-      await axios.post('/api/verify', {
+  const createNFT = async () => {
+    try {
+      const nftRes = await axios.get(nftURI);
+      const content = nftRes.data;
+
+      Object.keys(content).forEach((key) => {
+        if (!ALLOWED_FIELDS.includes(key)) {
+          throw new Error('Invalid JSON structure');
+        }
+
+        const signer = await provider.getSigner();
+
+        await nftContract?.mint(signer.address, nftURI);
+        await nftMarketplace?.addOwnedNFT(nftContract.target);
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const uploadMetadata = async () => {
+    try {
+      const { signedData, account } = await signedData();
+      const res = await axios.post('/api/verify', {
         address: account,
         signature: signedData,
         nft: nftMeta,
       });
 
-      console.log('signed data', signedData);
+      const data = res.data as PinataRes;
+
+      setNftURI(
+        `${process.env.NEXT_PUBLIC_PINATA_DOMAIN}/ipfs/${data.IpfsHash}}`
+      );
     } catch (error) {
       console.log(error);
     }
@@ -156,6 +186,8 @@ const CreatePage = () => {
                       </label>
                       <div className="mt-1 flex rounded-md shadow-sm">
                         <input
+                          value={price}
+                          onChange={(e) => setPrice(parseInt(e.target.value))}
                           type="number"
                           name="price"
                           id="price"
@@ -167,6 +199,7 @@ const CreatePage = () => {
                   </div>
                   <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
                     <button
+                      onClick={createNFT}
                       type="button"
                       className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-highlight hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-highlight"
                     >
@@ -314,7 +347,7 @@ const CreatePage = () => {
                   </div>
                   <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
                     <button
-                      onClick={createNFT}
+                      onClick={uploadMetadata}
                       type="button"
                       className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-highlight hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-highlight"
                     >
