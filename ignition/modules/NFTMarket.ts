@@ -14,7 +14,7 @@ module.exports = buildModule('NFTMarketplaceModule', (m) => {
   const { nftMarket } = m.useModule(NFTModule);
 
   const owner = m.getAccount(0);
-  const nftMarketplace = m.contract('NFTMarketplace', [owner, nftMarket]);
+  const nftMarketplace = m.contract('NFTMarketplace', [owner]);
 
   return { nftMarketplace };
 });

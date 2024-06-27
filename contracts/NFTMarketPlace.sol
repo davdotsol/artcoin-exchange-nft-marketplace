@@ -8,90 +8,153 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 contract NFTMarketplace is Ownable, ReentrancyGuard {
     struct NFTItem {
+        address nftContract;
         uint256 tokenId;
         address payable seller;
         uint256 price;
         bool isListed;
     }
 
-    IERC721 public nftContract;
-    mapping(uint256 => NFTItem) public nftItems;
-    uint256 public nftItemCount;
+    struct Bid {
+        address payable bidder;
+        uint256 bidAmount;
+    }
+
+    mapping(address => mapping(uint256 => NFTItem)) public nftItems; // nftContract => tokenId => NFTItem
+    mapping(address => mapping(uint256 => Bid)) public nftBids; // nftContract => tokenId => Bid
     mapping(address => uint256[]) private ownedNFTs;
     mapping(address => mapping(uint256 => uint256)) private ownedNFTsIndex;
-    mapping(uint256 => bool) public tokenIdToListingExists;
-    uint256[] public tokenIds;
 
     event NFTListed(
-        uint256 indexed nftItemId,
+        address indexed nftContract,
         uint256 indexed tokenId,
         address seller,
         uint256 price
     );
     event NFTSold(
-        uint256 indexed nftItemId,
+        address indexed nftContract,
         uint256 indexed tokenId,
         address buyer,
         uint256 price
     );
+    event BidPlaced(
+        address indexed nftContract,
+        uint256 indexed tokenId,
+        address bidder,
+        uint256 bidAmount
+    );
+    event BidAccepted(
+        address indexed nftContract,
+        uint256 indexed tokenId,
+        address seller,
+        address buyer,
+        uint256 bidAmount
+    );
 
-    constructor(
-        address _initialOwner,
-        address _nftContract
-    ) Ownable(_initialOwner) {
-        nftContract = IERC721(_nftContract);
-    }
+    constructor(address _initialOwner) Ownable(_initialOwner) {}
 
-    function listNFT(uint256 tokenId, uint256 price) external nonReentrant {
+    function listNFT(
+        address nftContract,
+        uint256 tokenId,
+        uint256 price
+    ) external nonReentrant {
         require(
-            nftContract.ownerOf(tokenId) == msg.sender,
+            IERC721(nftContract).ownerOf(tokenId) == msg.sender,
             "You do not own this NFT"
         );
         require(price > 0, "Price must be greater than zero");
 
-        nftContract.transferFrom(msg.sender, address(this), tokenId);
+        IERC721(nftContract).transferFrom(msg.sender, address(this), tokenId);
 
-        if (tokenIdToListingExists[tokenId]) {
-            NFTItem storage item = nftItems[tokenId];
+        NFTItem storage item = nftItems[nftContract][tokenId];
+        item.nftContract = nftContract;
+        item.tokenId = tokenId;
+        item.seller = payable(msg.sender);
+        item.price = price;
+        item.isListed = true;
 
-            // Update the listing
-            item.seller = payable(msg.sender);
-            item.price = price;
-            item.isListed = true;
-
-            emit NFTListed(nftItemCount, tokenId, msg.sender, price);
-        } else {
-            nftItems[nftItemCount] = NFTItem({
-                tokenId: tokenId,
-                seller: payable(msg.sender),
-                price: price,
-                isListed: true
-            });
-            tokenIdToListingExists[tokenId] = true;
-            tokenIds.push(tokenId);
-            emit NFTListed(nftItemCount, tokenId, msg.sender, price);
-            nftItemCount++;
-        }
+        emit NFTListed(nftContract, tokenId, msg.sender, price);
     }
 
-    function buyNFT(uint256 nftItemId) external payable nonReentrant {
-        NFTItem storage nftItem = nftItems[nftItemId];
+    function buyNFT(
+        address nftContract,
+        uint256 tokenId
+    ) external payable nonReentrant {
+        NFTItem storage nftItem = nftItems[nftContract][tokenId];
         require(msg.value == nftItem.price, "Incorrect price");
         require(nftItem.isListed, "NFT must be listed");
+
         if (ownedNFTs[nftItem.seller].length > 0) {
-            _removeOwnedNFT(nftItem.seller, nftItemId);
+            _removeOwnedNFT(nftItem.seller, tokenId);
         }
+
         nftItem.seller.transfer(msg.value);
-        nftContract.transferFrom(address(this), msg.sender, nftItem.tokenId);
+        IERC721(nftContract).transferFrom(address(this), msg.sender, tokenId);
         nftItem.isListed = false;
-        _addOwnedNFT(msg.sender, nftItemId);
-        emit NFTSold(nftItemId, nftItem.tokenId, msg.sender, nftItem.price);
+
+        _addOwnedNFT(msg.sender, tokenId);
+
+        emit NFTSold(nftContract, tokenId, msg.sender, nftItem.price);
+    }
+
+    function placeBid(
+        address nftContract,
+        uint256 tokenId
+    ) external payable nonReentrant {
+        require(msg.value > 0, "Bid amount must be greater than zero");
+
+        Bid storage existingBid = nftBids[nftContract][tokenId];
+        require(
+            msg.value > existingBid.bidAmount,
+            "There is already a higher or equal bid"
+        );
+
+        // Refund previous bidder
+        if (existingBid.bidAmount > 0) {
+            existingBid.bidder.transfer(existingBid.bidAmount);
+        }
+
+        nftBids[nftContract][tokenId] = Bid({
+            bidder: payable(msg.sender),
+            bidAmount: msg.value
+        });
+
+        emit BidPlaced(nftContract, tokenId, msg.sender, msg.value);
+    }
+
+    function acceptBid(
+        address nftContract,
+        uint256 tokenId
+    ) external nonReentrant {
+        NFTItem storage nftItem = nftItems[nftContract][tokenId];
+        require(
+            nftItem.seller == msg.sender,
+            "Only the seller can accept bids"
+        );
+
+        Bid storage bid = nftBids[nftContract][tokenId];
+        require(bid.bidAmount > 0, "No bids available");
+
+        // Transfer the NFT to the highest bidder
+        IERC721(nftContract).transferFrom(address(this), bid.bidder, tokenId);
+        nftItem.seller.transfer(bid.bidAmount);
+
+        nftItem.isListed = false;
+
+        emit BidAccepted(
+            nftContract,
+            tokenId,
+            msg.sender,
+            bid.bidder,
+            bid.bidAmount
+        );
     }
 
     function getNFTItem(
-        uint256 nftItemId
+        address nftContract,
+        uint256 tokenId
     ) external view returns (NFTItem memory) {
-        return nftItems[nftItemId];
+        return nftItems[nftContract][tokenId];
     }
 
     function getOwnedNFTs(

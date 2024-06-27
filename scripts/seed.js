@@ -26,11 +26,11 @@ async function main() {
     return null;
   }
 
-  const nftItem = await hre.ethers.getContractAt(
+  const nftContract_1 = await hre.ethers.getContractAt(
     'NFTMarket',
     config[chainIdStr].NFTMarket.address
   );
-  console.log(`NFT token fetched ${nftItem.target}`);
+  console.log(`NFT token fetched ${nftContract_1.target}`);
 
   const nftMarketplace = await hre.ethers.getContractAt(
     'NFTMarketplace',
@@ -39,19 +39,19 @@ async function main() {
   console.log(`NFT Marketplace fetched ${nftMarketplace.target}`);
 
   console.log('Mint NFTs');
-  await nftItem
+  await nftContract_1
     .connect(deployer)
     .mint(
       investor1,
       'https://lavender-labour-wasp-844.mypinata.cloud/ipfs/QmeDLUciZ2mtRz4kkhUhQ22nbViAXf5uWmq3eNEksQhjNZ'
     );
-  await nftItem
+  await nftContract_1
     .connect(deployer)
     .mint(
       investor1,
       'https://lavender-labour-wasp-844.mypinata.cloud/ipfs/QmVZm1fg5zJZPgwfqhUWVmtRR3xF9Us2bL3WHGyBKY5yyd'
     );
-  await nftItem
+  await nftContract_1
     .connect(deployer)
     .mint(
       investor2,
@@ -59,19 +59,25 @@ async function main() {
     );
 
   // Approve the marketplace contract to handle the token
-  await nftItem.connect(investor1).approve(nftMarketplace, 0);
-  await nftItem.connect(investor1).approve(nftMarketplace, 1);
-  await nftItem.connect(investor2).approve(nftMarketplace, 2);
+  await nftContract_1.connect(investor1).approve(nftMarketplace, 0);
+  await nftContract_1.connect(investor1).approve(nftMarketplace, 1);
+  await nftContract_1.connect(investor2).approve(nftMarketplace, 2);
 
   console.log('List NFTs');
-  await nftMarketplace.connect(investor1).listNFT(0, ethers.parseEther('0.05'));
-  await nftMarketplace.connect(investor1).listNFT(1, ethers.parseEther('0.05'));
-  await nftMarketplace.connect(investor2).listNFT(2, ethers.parseEther('0.05'));
+  await nftMarketplace
+    .connect(investor1)
+    .listNFT(nftContract_1.target, 0, ethers.parseEther('0.05'));
+  await nftMarketplace
+    .connect(investor1)
+    .listNFT(nftContract_1.target, 1, ethers.parseEther('0.05'));
+  await nftMarketplace
+    .connect(investor2)
+    .listNFT(nftContract_1.target, 2, ethers.parseEther('0.05'));
 
   console.log('Buy NFT');
   await nftMarketplace
     .connect(investor3)
-    .buyNFT(2, { value: ethers.parseEther('0.05') });
+    .buyNFT(nftContract_1.target, 2, { value: ethers.parseEther('0.05') });
 
   console.log(`Finished.\n`);
 }
