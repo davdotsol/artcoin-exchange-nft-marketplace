@@ -1,10 +1,11 @@
 import { BaseLayout, NFTList } from '@ui';
-// import nfts from '../content/meta.json';
 import { NFTMetaData } from '@_types/nft';
+import { useNetwork } from '@hooks/web3';
 import { useWeb3 } from '@providers/web3';
 
 export default function Home() {
   const { ethereum, provider } = useWeb3();
+  const { network } = useNetwork();
 
   return (
     <BaseLayout>
@@ -21,7 +22,26 @@ export default function Home() {
               Mint a NFT to get unlimited ownership forever!
             </p>
           </div>
-          <NFTList />
+          {network.isConnectedToNetwork ? (
+            <NFTList />
+          ) : (
+            <div className="rounded-md bg-yellow-50 p-4 mt-10">
+              <div className="flex">
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-yellow-800">
+                    Attention needed
+                  </h3>
+                  <div className="mt-2 text-sm text-yellow-700">
+                    <p>
+                      {network.isLoading
+                        ? 'Loading...'
+                        : `Connect to ${network.targetNetwork}`}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </BaseLayout>
