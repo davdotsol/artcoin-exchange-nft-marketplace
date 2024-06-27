@@ -2,28 +2,25 @@ import { ChangeEvent, useState } from 'react';
 import { Switch } from '@headlessui/react';
 import axios from 'axios';
 import { BaseLayout } from '@ui';
-import { NFTMetaData } from '@_types/nft';
+import { NFTMetaData, Trait } from '@_types/nft';
 import { useWeb3 } from '@providers/web3';
 import { useNetwork } from '@hooks/web3';
-const ATTRIBUTES = ['health', 'attack', 'speed'];
+
+const ATTRIBUTES: Trait[] = ['health', 'attack', 'speed'];
 
 const ALLOWED_FIELDS = ['name', 'description', 'image', 'attributes'];
 
 const CreatePage = () => {
-  const { ethereum } = useWeb3();
+  const { provider, nftContract, marketplaceContract } = useWeb3();
   const { network } = useNetwork();
-  const [nftURI, setNftURI] = useState('');
-  const [price, setPrice] = useState(0);
-  const [hasURI, setHasURI] = useState(false);
+  const [nftURI, setNftURI] = useState<string>('');
+  const [price, setPrice] = useState<number>(0);
+  const [hasURI, setHasURI] = useState<boolean>(false);
   const [nftMeta, setNFTMeta] = useState<NFTMetaData>({
     name: '',
     description: '',
     image: '',
-    attributes: [
-      { trait_type: 'attack', value: '0' },
-      { trait_type: 'health', value: '0' },
-      { trait_type: 'speed', value: '0' },
-    ],
+    attributes: ATTRIBUTES.map((attr) => ({ trait_type: attr, value: '0' })),
   });
 
   const handleChange = (
@@ -35,66 +32,33 @@ const CreatePage = () => {
 
   const handleAttributeChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    const attributeIdx = nftMeta.attributes.findIndex(
-      (attr) => attr.trait_type === name
-    );
-    nftMeta.attributes[attributeIdx].value = value;
-    setNFTMeta({ ...nftMeta, attributes: nftMeta.attributes });
+    setNFTMeta((prevMeta) => ({
+      ...prevMeta,
+      attributes: prevMeta.attributes.map((attr) =>
+        attr.trait_type === name ? { ...attr, value } : attr
+      ),
+    }));
   };
-
-  const createNFT = async () => {
-    try {
-      const messageToSign = await axios.get('/api/verify');
-      const accounts = (await ethereum?.request({
-        method: 'eth_requestAccounts',
-      })) as string[];
-      const account = accounts[0];
-
-      const signedData = await ethereum?.request({
-        method: 'personal_sign',
-        params: [
-          JSON.stringify(messageToSign.data),
-          account,
-          messageToSign.data.id,
-        ],
-      });
 
   const createNFT = async () => {
     try {
       const nftRes = await axios.get(nftURI);
       const content = nftRes.data;
 
+      // Validate content fields
       Object.keys(content).forEach((key) => {
         if (!ALLOWED_FIELDS.includes(key)) {
           throw new Error('Invalid JSON structure');
         }
-
-        const signer = await provider.getSigner();
-
-        await nftContract?.mint(signer.address, nftURI);
-        await nftMarketplace?.addOwnedNFT(nftContract.target);
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const uploadMetadata = async () => {
-    try {
-      const { signedData, account } = await signedData();
-      const res = await axios.post('/api/verify', {
-        address: account,
-        signature: signedData,
-        nft: nftMeta,
       });
 
-      const data = res.data as PinataRes;
+      const signer = await provider?.getSigner();
+      await nftContract?.mint(signer?.address, nftURI);
+      await marketplaceContract?.addOwnedNFT(nftContract?.target);
 
-      setNftURI(
-        `${process.env.NEXT_PUBLIC_PINATA_DOMAIN}/ipfs/${data.IpfsHash}}`
-      );
+      console.log('NFT created and added to marketplace successfully');
     } catch (error) {
-      console.log(error);
+      console.error('Error creating NFT:', error);
     }
   };
 
@@ -371,7 +335,7 @@ const CreatePage = () => {
                   </div>
                   <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
                     <button
-                      onClick={uploadMetadata}
+                      onClick={() => {}}
                       type="button"
                       className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-highlight hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-highlight"
                     >
