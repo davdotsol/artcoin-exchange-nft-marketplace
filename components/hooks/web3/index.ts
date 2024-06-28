@@ -18,6 +18,18 @@ export const useListedNFTs = () => {
   return { nfts };
 };
 
+export const useCollectionNFTs = (collectionAddress: string) => {
+  const { useCollectionNFTs } = useHooks();
+  const nfts = useCollectionNFTs();
+  return { nfts };
+};
+
+export const useCollectionStatistics = (collectionAddress: string) => {
+  const { useCollectionStatistics } = useHooks();
+  const statistics = useCollectionStatistics();
+  return { statistics };
+};
+
 export const useOwnedNFTs = () => {
   const { useOwnedNFTs } = useHooks();
   const nfts = useOwnedNFTs();

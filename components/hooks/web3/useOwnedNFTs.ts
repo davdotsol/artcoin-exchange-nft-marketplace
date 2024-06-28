@@ -18,26 +18,26 @@ export const createOwnedNFTsHook: OwnedNFTsHookFactory = (deps) => () => {
   const fetcher = async () => {
     const nfts = [] as nft[];
     try {
-      const signer = await provider?.getSigner();
-      const ownedNFTs = await marketplaceContract?.getOwnedNFTs(
-        signer?.address
-      );
-      for (let i = 0; i < ownedNFTs.length; i++) {
-        const tokenId = ownedNFTs[i];
-        const tokenURI = await nftContract?.tokenURI(tokenId);
-        const nftItem = (await marketplaceContract?.getNFTItem(
-          tokenId
-        )) as nftItem;
-        const metaRes = await fetch(tokenURI);
-        const meta = await metaRes.json();
-        nfts.push({
-          tokenId: parseInt(nftItem.tokenId.toString()),
-          seller: nftItem.seller,
-          price: parseFloat(ethers.formatEther(nftItem.price)),
-          isListed: nftItem.isListed,
-          meta,
-        });
-      }
+      // const signer = await provider?.getSigner();
+      // const ownedNFTs = await marketplaceContract?.getOwnedNFTs(
+      //   signer?.address
+      // );
+      // for (let i = 0; i < ownedNFTs.length; i++) {
+      //   const tokenId = ownedNFTs[i];
+      //   const tokenURI = await nftContract?.tokenURI(tokenId);
+      //   const nftItem = (await marketplaceContract?.getNFTItem(
+      //     tokenId
+      //   )) as nftItem;
+      //   const metaRes = await fetch(tokenURI);
+      //   const meta = await metaRes.json();
+      //   nfts.push({
+      //     tokenId: parseInt(nftItem.tokenId.toString()),
+      //     seller: nftItem.seller,
+      //     price: parseFloat(ethers.formatEther(nftItem.price)),
+      //     isListed: nftItem.isListed,
+      //     meta,
+      //   });
+      // }
     } catch (error) {
       console.log(error);
     }

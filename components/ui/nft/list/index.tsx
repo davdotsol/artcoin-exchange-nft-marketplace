@@ -1,6 +1,6 @@
 import NFTItem from '../item';
 import { useListedNFTs } from '@hooks/web3';
-import { nft } from '../../../../types/nft';
+import { nft } from '@_types/nft';
 
 type NFTListProps = {
   nfts: nft[];

@@ -9,10 +9,12 @@ export type NFTMetaData = {
   name: string;
   description: string;
   image: string;
+  collection: string;
   attributes: NFTAttribute[];
 };
 
 export type nftItem = {
+  nftContract: string;
   tokenId: number;
   seller: string;
   price: number;

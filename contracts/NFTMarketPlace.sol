@@ -25,6 +25,9 @@ contract NFTMarketplace is Ownable, ReentrancyGuard {
     mapping(address => uint256[]) private ownedNFTs;
     mapping(address => mapping(uint256 => uint256)) private ownedNFTsIndex;
 
+    NFTItem[] public allListedNFTs; // Store all listed NFTs
+    mapping(address => uint256) public collectionListedCount; // Store listing count per collection
+
     event NFTListed(
         address indexed nftContract,
         uint256 indexed tokenId,
@@ -72,6 +75,9 @@ contract NFTMarketplace is Ownable, ReentrancyGuard {
         item.seller = payable(msg.sender);
         item.price = price;
         item.isListed = true;
+
+        allListedNFTs.push(item);
+        collectionListedCount[nftContract] += 1;
 
         emit NFTListed(nftContract, tokenId, msg.sender, price);
     }
@@ -161,6 +167,51 @@ contract NFTMarketplace is Ownable, ReentrancyGuard {
         address owner
     ) external view returns (uint256[] memory) {
         return ownedNFTs[owner];
+    }
+
+    function getAllListedNFTs() external view returns (NFTItem[] memory) {
+        return allListedNFTs;
+    }
+
+    function getCollectionNFTs(
+        address nftContract
+    ) external view returns (NFTItem[] memory) {
+        uint256 count = collectionListedCount[nftContract];
+        NFTItem[] memory items = new NFTItem[](count);
+        uint256 index = 0;
+
+        for (uint256 i = 0; i < allListedNFTs.length; i++) {
+            if (allListedNFTs[i].nftContract == nftContract) {
+                items[index] = allListedNFTs[i];
+                index++;
+            }
+        }
+
+        return items;
+    }
+
+    function getNFTDetails(
+        address nftContract,
+        uint256 tokenId
+    ) external view returns (NFTItem memory, Bid memory) {
+        return (nftItems[nftContract][tokenId], nftBids[nftContract][tokenId]);
+    }
+
+    function getMarketplaceStatistics()
+        external
+        view
+        returns (uint256, uint256)
+    {
+        uint256 totalListings = allListedNFTs.length;
+        uint256 totalSales = 0;
+
+        for (uint256 i = 0; i < allListedNFTs.length; i++) {
+            if (!allListedNFTs[i].isListed) {
+                totalSales++;
+            }
+        }
+
+        return (totalListings, totalSales);
     }
 
     function _addOwnedNFT(address owner, uint256 tokenId) internal {

@@ -1,11 +1,17 @@
-import { nft } from '../../../../types/nft';
+import Link from 'next/link';
+import { nft } from '@_types/nft';
 
 type NFTItemProps = {
   nft: nft;
-  buyNFT: (tokenId: number, value: number) => Promise<void>;
+  buyNFT: (
+    nftContract: string,
+    tokenId: number,
+    value: number
+  ) => Promise<void>;
 };
 
 const NFTItem = ({ nft, buyNFT }: NFTItemProps) => {
+  console.log(nft);
   return (
     <>
       <div className="flex-shrink-0">
@@ -17,7 +23,12 @@ const NFTItem = ({ nft, buyNFT }: NFTItemProps) => {
       </div>
       <div className="flex-1 bg-white p-6 flex flex-col justify-between">
         <div className="flex-1">
-          <p className="text-sm font-medium text-highlight">Robots NFT</p>
+          <Link
+            href={`/collections/${nft.nftContract}`}
+            className="text-sm font-medium text-highlight hover:underline"
+          >
+            {nft.meta.collection}
+          </Link>
           <div className="block mt-2">
             <p className="text-xl font-semibold text-secondary">
               {nft.meta.name}
@@ -64,17 +75,17 @@ const NFTItem = ({ nft, buyNFT }: NFTItemProps) => {
             type="button"
             className="disabled:bg-light disabled:text-secondary disabled:border-secondary disabled:shadow-none disabled:cursor-not-allowed mr-2 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-highlight hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary"
             onClick={() => {
-              buyNFT(nft.tokenId, nft.price);
+              buyNFT(nft.nftContract, nft.tokenId, nft.price);
             }}
           >
             Buy
           </button>
-          <button
-            type="button"
+          <Link
+            href={`/nft/${nft.nftContract}/${nft.tokenId}`}
             className="disabled:bg-light disabled:text-secondary disabled:border-secondary disabled:shadow-none disabled:cursor-not-allowed inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary"
           >
             Preview
-          </button>
+          </Link>
         </div>
       </div>
     </>

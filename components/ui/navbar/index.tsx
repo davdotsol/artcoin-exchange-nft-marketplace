@@ -16,7 +16,10 @@ import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useAccount, useNetwork } from '@hooks/web3';
 import Walletbar from './Walletbar';
 
-const navigation = [{ name: 'Marketplace', href: '/', current: true }];
+const navigation = [
+  { name: 'Marketplace', href: '/', current: true },
+  { name: 'Collections', href: '/collections', current: false },
+];
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');

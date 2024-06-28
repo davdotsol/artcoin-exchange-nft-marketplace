@@ -17,6 +17,7 @@ const CreatePage = () => {
   const [price, setPrice] = useState<number>(0);
   const [hasURI, setHasURI] = useState<boolean>(false);
   const [nftMeta, setNFTMeta] = useState<NFTMetaData>({
+    collection: '',
     name: '',
     description: '',
     image: '',

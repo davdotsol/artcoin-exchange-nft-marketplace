@@ -43,19 +43,19 @@ async function main() {
     .connect(deployer)
     .mint(
       investor1,
-      'https://lavender-labour-wasp-844.mypinata.cloud/ipfs/QmeDLUciZ2mtRz4kkhUhQ22nbViAXf5uWmq3eNEksQhjNZ'
+      'https://lavender-labour-wasp-844.mypinata.cloud/ipfs/QmWRnQWTKrEpV1zCXpqG7saCwhfNJzF1MxE1KTRiiHuBT3'
     );
   await nftContract_1
     .connect(deployer)
     .mint(
       investor1,
-      'https://lavender-labour-wasp-844.mypinata.cloud/ipfs/QmVZm1fg5zJZPgwfqhUWVmtRR3xF9Us2bL3WHGyBKY5yyd'
+      'https://lavender-labour-wasp-844.mypinata.cloud/ipfs/QmUoxgeMJGd3ktujEQ7WmWS7Q71NsLiPvGWHwxK9LWwoGU'
     );
   await nftContract_1
     .connect(deployer)
     .mint(
       investor2,
-      'https://lavender-labour-wasp-844.mypinata.cloud/ipfs/QmTwuPFGJgcfReV5R3uBNKoRXMx33W9Yq1yQ9WWAf788CW'
+      'https://lavender-labour-wasp-844.mypinata.cloud/ipfs/QmSTJsTeTC4UGCdT8B7jpHFDtVLbkreex2y4F7mMWBUrAR'
     );
 
   // Approve the marketplace contract to handle the token
